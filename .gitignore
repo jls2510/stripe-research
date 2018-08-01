@@ -1,0 +1,16 @@
+
+# eclipse stuff
+.settings
+.project
+.classpath
+
+# intellij idea stuff
+.idea
+
+# other ide stuff
+.pydevproject
+
+# build artifacts
+[Bb]uild/**
+[Bb]in/**
+[Tt]arget/**
