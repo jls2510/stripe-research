@@ -3,6 +3,7 @@
 .settings
 .project
 .classpath
+.buildpath
 
 # intellij idea stuff
 .idea
