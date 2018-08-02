@@ -1,8 +1,11 @@
+
 <?php
 require_once('./stripe-config.php');
+
+echo basename(__FILE__);
+
 ?>
 
-stripe-test-ui.php
 <br/>
 
 <h1>Stripe R&D</h1>
