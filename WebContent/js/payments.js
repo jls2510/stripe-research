@@ -123,8 +123,12 @@ form.addEventListener('submit', function (event) {
 // Handle the order and source activation if required
 function handleOrder(source, error) {
     console.log("handleOrder()");
+
+    logSourceDetails(source);
+
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
+
     if (error) {
         mainElement.classList.remove('processing');
         mainElement.classList.remove('receiver');
@@ -134,20 +138,17 @@ function handleOrder(source, error) {
     }
 
     submitButton.textContent = 'Processing Payment…';
-    const response = payOrder(source);
-    //handleOrder(response.source);
+
+    // what to do on the server side
+    //document.getElementById('action').value = "chargeSource";
+    document.getElementById('action').value = "createCustomer";
+
+    document.getElementById('source').value = source;
+    document.getElementById('sourceId').value = source.id;
+    document.getElementById('totalAmount').value = getOrderTotal();
+    document.getElementById('processPaymentForm').submit();
 
 } // handleOrder()
-
-// Pay the specified order by sending a payment source alongside it.
-function payOrder(source) {
-    console.log("payOrder()");
-    logSourceDetails(source);
-
-    document.getElementById('sourceId').value = source.id;
-    //document.getElementById('totalAmount').value =<?php echo $totalAmount ?>;
-    //document.getElementById('processPaymentForm').submit();
-} // payOrder()
 
 
 // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).

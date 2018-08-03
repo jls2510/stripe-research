@@ -1,4 +1,3 @@
-
 <?php
 
 echo basename(__FILE__) . "<br><br>\n";
@@ -14,44 +13,141 @@ if ($_POST) {
 
 echo "retrieved Api key: " . \Stripe\Stripe::getApiKey() . "<br><br>\n";
 
+$action = $_POST['action'];
+echo "action = " . $action . "<br><br>\n";
 
-//$tokenId = $_POST['tokenId'];
-//$totalAmount = $_POST['totalAmount'];
-//
-//echo "tokenId = " . $tokenId . "<br><br>\n";
-
-// --------------------------------------------
-// create a straightforward charge with a token
-
-$message = "Default Message";
-
-try {
-//    $charge = \Stripe\Charge::create([
-//        'amount' => $totalAmount,
-//        'currency' => 'usd',
-//        'description' => 'Example charge',
-//        'capture' => false,
-//        'source' => $tokenId
-//    ]);
-//
-//    $message = "Charge object = " . $charge . "<br><br>\n";
+if ($action == 'chargeSource') {
+    chargeSource();
+} else if ($action == 'createCustomer') {
+    createCustomer();
 }
-catch (Exception $e) {
-    // Use the variable $error to save any errors
-    // To be displayed to the customer later in the page
-    //$body = $e->getJsonBody();
-    //$err  = $body['error'];
-    //$error = $err['message'];
-    
-    $message = $e;
-    
-}
-
-echo $message;
 
 // ---------------------------------------------
 
+function chargeSource()
+{
+    echo "chargeSource()<br><br>\n";
 
+    $source = $_POST['source'];
+    $sourceId = $_POST['sourceId'];
+    $totalAmount = $_POST['totalAmount'];
+
+    echo "sourceId = " . $sourceId . "<br><br>\n";
+
+    try {
+        $charge = \Stripe\Charge::create([
+            'amount' => $totalAmount,
+            'currency' => 'usd',
+            'description' => 'Example charge',
+            'capture' => false,
+            'source' => $sourceId
+        ]);
+
+        echo "Charge object = " . $charge . "<br><br>\n";
+
+    } catch (Exception $e) {
+        // Use the variable $error to save any errors
+        // To be displayed to the customer later in the page
+        //$body = $e->getJsonBody();
+        //$err  = $body['error'];
+        //$error = $err['message'];
+        echo $e . "<br><br>\n";
+    }
+
+} // chargeSource()
+
+
+function createCustomer()
+{
+    echo "createCustomer()<br><br>\n";
+
+    $source = json_decode($_POST['source'], true);
+    $sourceId = $_POST['sourceId'];
+    $totalAmount = $_POST['totalAmount'];
+
+    $email = "default@kogentservices.com";
+    if ($source['owner'] && $source['owner']['email']) {
+            $email = $source['owner']['email'];
+    }
+
+    echo "sourceId = " . $sourceId . "<br><br>\n";
+
+    try {
+        // Create a Customer:
+        echo "Creating Customer with sourceId: " . $sourceId . "<br><br>\n";
+        $customer = \Stripe\Customer::create([
+            'source' => $sourceId,
+            'email' => $email,
+        ]);
+
+        $customerId = $customer->id;
+
+        echo "Customer object = " . $customer . "<br><br>\n";
+
+        chargeCustomer($customerId, $totalAmount);
+
+    } catch (Exception $e) {
+        // Use the variable $error to save any errors
+        // To be displayed to the customer later in the page
+        //$body = $e->getJsonBody();
+        //$err  = $body['error'];
+        //$error = $err['message'];
+        echo $e . "<br><br>\n";
+    }
+
+} // createCustomer()
+
+
+function chargeCustomer($customerId, $amount)
+{
+    echo "chargeCustomer()<br><br>\n";
+
+    try {
+        // Charge the Customer instead of the card:
+        echo "Charging Customer " . $customerId . ": amount: " . $amount . "<br><br>\n";
+        $charge = \Stripe\Charge::create([
+            'amount' => $amount,
+            'currency' => 'usd',
+            'capture' => false,
+            'customer' => $customerId,
+        ]);
+
+        echo "Charge object = " . $charge . "<br><br>\n";
+
+        captureCharge($charge->id);
+
+    } catch (Exception $e) {
+        // Use the variable $error to save any errors
+        // To be displayed to the customer later in the page
+        //$body = $e->getJsonBody();
+        //$err  = $body['error'];
+        //$error = $err['message'];
+        echo $e . "<br><br>\n";
+    }
+
+} // chargeCustomer()
+
+function captureCharge($chargeId) {
+    echo "captureCharge()<br><br>\n";
+
+    try {
+        // Charge the Customer instead of the card:
+        echo "Capturing Charge " . $chargeId . "<br><br>\n";
+        $charge = \Stripe\Charge::retrieve($chargeId);
+        $charge->capture();
+
+        echo "Charge object = " . $charge . "<br><br>\n";
+
+    } catch (Exception $e) {
+        // Use the variable $error to save any errors
+        // To be displayed to the customer later in the page
+        //$body = $e->getJsonBody();
+        //$err  = $body['error'];
+        //$error = $err['message'];
+        echo $e . "<br><br>\n";
+    }
+
+} // captureCharge()
 
 ?>
 
