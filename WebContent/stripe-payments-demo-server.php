@@ -1,8 +1,7 @@
-stripe-test-api.php
-<br/>
-<br/>
 
 <?php
+
+echo basename(__FILE__) . "<br><br>\n";
 
 require_once('./stripe-config.php');
 
@@ -16,10 +15,10 @@ if ($_POST) {
 echo "retrieved Api key: " . \Stripe\Stripe::getApiKey() . "<br><br>\n";
 
 
-$tokenId = $_POST['tokenId'];
-$totalAmount = $_POST['totalAmount'];
-
-echo "tokenId = " . $tokenId . "<br><br>\n";
+//$tokenId = $_POST['tokenId'];
+//$totalAmount = $_POST['totalAmount'];
+//
+//echo "tokenId = " . $tokenId . "<br><br>\n";
 
 // --------------------------------------------
 // create a straightforward charge with a token
@@ -27,15 +26,15 @@ echo "tokenId = " . $tokenId . "<br><br>\n";
 $message = "Default Message";
 
 try {
-    $charge = \Stripe\Charge::create([
-        'amount' => $totalAmount,
-        'currency' => 'usd',
-        'description' => 'Example charge',
-        'capture' => false,
-        'source' => $tokenId
-    ]);
-
-    $message = "Charge object = " . $charge . "<br><br>\n";
+//    $charge = \Stripe\Charge::create([
+//        'amount' => $totalAmount,
+//        'currency' => 'usd',
+//        'description' => 'Example charge',
+//        'capture' => false,
+//        'source' => $tokenId
+//    ]);
+//
+//    $message = "Charge object = " . $charge . "<br><br>\n";
 }
 catch (Exception $e) {
     // Use the variable $error to save any errors

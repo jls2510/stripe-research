@@ -1,8 +1,6 @@
-stripe-test-api.php
-<br/>
-<br/>
-
 <?php
+
+echo basename(__FILE__);
 
 require_once('./stripe-config.php');
 
