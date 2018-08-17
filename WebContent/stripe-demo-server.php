@@ -28,7 +28,6 @@ function chargeSource()
 {
     echo "chargeSource()<br><br>\n";
 
-    $source = $_POST['source'];
     $sourceId = $_POST['sourceId'];
     $totalAmount = $_POST['totalAmount'];
 
@@ -57,20 +56,33 @@ function chargeSource()
 } // chargeSource()
 
 
+function getSource($sourceId) {
+
+    $source = \Stripe\Source::retrieve($sourceId);
+
+    return $source;
+
+} // getSource()
+
+
 function createCustomer()
 {
     echo "createCustomer()<br><br>\n";
 
-    $source = json_decode($_POST['source'], true);
     $sourceId = $_POST['sourceId'];
     $totalAmount = $_POST['totalAmount'];
 
-    $email = "default@kogentservices.com";
-    if ($source['owner'] && $source['owner']['email']) {
-            $email = $source['owner']['email'];
-    }
-
     echo "sourceId = " . $sourceId . "<br><br>\n";
+
+    $source = getSource($sourceId);
+    $source = str_replace("Stripe\Source JSON: ", "", $source);
+    $source = json_decode($source, true);
+
+    $email = "test@kogentservices.com";
+    if ($source['owner']['email']) {
+        $email = $source['owner']['email'];
+    }
+    //echo "email = " . $email . "<br><br>\n";
 
     try {
         // Create a Customer:
@@ -87,6 +99,7 @@ function createCustomer()
         chargeCustomer($customerId, $totalAmount);
 
     } catch (Exception $e) {
+        echo "Caught Exception" . "<br><br>\n";
         // Use the variable $error to save any errors
         // To be displayed to the customer later in the page
         //$body = $e->getJsonBody();
@@ -127,7 +140,8 @@ function chargeCustomer($customerId, $amount)
 
 } // chargeCustomer()
 
-function captureCharge($chargeId) {
+function captureCharge($chargeId)
+{
     echo "captureCharge()<br><br>\n";
 
     try {

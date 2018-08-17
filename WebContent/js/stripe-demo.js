@@ -53,11 +53,12 @@ const card = elements.create('card', {style: style});
 card.mount('#card-element');
 
 // Monitor change events on the Card Element to display any errors.
-card.on('change', function (error) {
+card.on('change', function (result) {
     console.log("card change event:");
     const cardErrors = document.getElementById('card-errors');
-    if (error) {
-        cardErrors.textContent = error.message;
+    if (result.error) {
+        //logObject(error);
+        cardErrors.textContent = result.error.message;
         cardErrors.classList.add('visible');
     } else {
         cardErrors.classList.remove('visible');
@@ -130,6 +131,7 @@ function handleOrder(source, error) {
     const confirmationElement = document.getElementById('confirmation');
 
     if (error) {
+        logObject(error);
         mainElement.classList.remove('processing');
         mainElement.classList.remove('receiver');
         confirmationElement.querySelector('.error-message').innerText =
@@ -143,7 +145,6 @@ function handleOrder(source, error) {
     //document.getElementById('action').value = "chargeSource";
     document.getElementById('action').value = "createCustomer";
 
-    document.getElementById('source').value = source;
     document.getElementById('sourceId').value = source.id;
     document.getElementById('totalAmount').value = getOrderTotal();
     document.getElementById('processPaymentForm').submit();
@@ -205,7 +206,7 @@ function getConfig() {
     } catch (err) {
         return {error: err.message};
     }
-}
+} // getConfig()
 
 function logSourceDetails(source) {
     for (var key in source) {
@@ -224,6 +225,20 @@ function logSourceDetails(source) {
         }
     }
 } // logSourceDetails()
+
+function logObject(object) {
+    if (! object instanceof Object) {return;}
+
+    for (var key in object) {
+        if (object.hasOwnProperty(key)) {
+            var value = object[key];
+            console.log("object." + key + " -> " + value + "\n");
+            if (value instanceof Object) {
+                logObject(value);
+            }
+        }
+    }
+} // logObject()
 
 // Update the main button to reflect the payment method being selected.
 function updateButtonLabel(paymentMethod, bankName) {
